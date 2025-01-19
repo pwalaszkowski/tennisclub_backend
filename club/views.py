@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import authenticate
 from rest_framework import status
 
@@ -9,6 +9,8 @@ from .serializers import ClubUserSerializer
 
 
 class RegisterUserView(APIView):
+    permission_classes = [AllowAny]  # Allow anyone to access this view
+
     def post(self, request):
         serializer = ClubUserSerializer(data=request.data)
         if serializer.is_valid():
