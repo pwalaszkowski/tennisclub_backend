@@ -1,9 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import RegisterUserView, LoginView, HomeView, LogoutView, CustomTokenRefreshView, ClubUserListView, CourtViewSet
+from .views import (RegisterUserView, LoginView, HomeView, LogoutView, CustomTokenRefreshView,
+                    ClubUserListView, CourtViewSet, ReservationViewSet)
 
 router = DefaultRouter()
 router.register(r'courts', CourtViewSet, basename='court')
+router.register(r'reservations', ReservationViewSet, basename='reservation')
 
 urlpatterns = [
     path('home/', HomeView.as_view(), name='home'),

@@ -9,8 +9,8 @@ from django.contrib.auth import authenticate, login, logout
 from rest_framework import status, viewsets
 from django.shortcuts import redirect
 
-from .models import ClubUser, Court
-from .serializers import ClubUserSerializer, CourtSerializer
+from .models import ClubUser, Court, Reservation
+from .serializers import ClubUserSerializer, CourtSerializer, ReservationSerializer
 
 
 class RegisterUserView(APIView):
@@ -99,6 +99,17 @@ class CourtViewSet(viewsets.ModelViewSet):
 
     queryset = Court.objects.all()
     serializer_class = CourtSerializer
+
+class ReservationViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]  # Require authentication
+
+    queryset = Reservation.objects.all()
+    serializer_class = ReservationSerializer
+
+    def get_queryset(self):
+        # Limit reservations to the current user
+        user = self.request.user
+        return Reservation.objects.filter(user=user)
 
 
 class ProtectedView(APIView):

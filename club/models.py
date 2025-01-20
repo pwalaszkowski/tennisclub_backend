@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
+from django.conf import settings
 
 class ClubUser(AbstractUser):
     MEMBERSHIP_TYPES = (
@@ -46,3 +47,26 @@ class Court(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Reservation(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reservations')
+    court = models.ForeignKey('Court', on_delete=models.CASCADE, related_name='reservations')
+    date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(start_time__gte='07:00:00') & models.Q(end_time__lte='22:00:00'),
+                name='valid_reservation_time',
+            ),
+            models.UniqueConstraint(
+                fields=['court', 'date', 'start_time', 'end_time'],
+                name='unique_court_reservation',
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.user} - {self.court} ({self.date} {self.start_time} - {self.end_time})"
