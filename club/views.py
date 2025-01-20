@@ -6,11 +6,11 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from django.contrib.auth import authenticate, login, logout
-from rest_framework import status
+from rest_framework import status, viewsets
 from django.shortcuts import redirect
 
-from .models import ClubUser
-from .serializers import ClubUserSerializer
+from .models import ClubUser, Court
+from .serializers import ClubUserSerializer, CourtSerializer
 
 
 class RegisterUserView(APIView):
@@ -92,6 +92,13 @@ class ClubUserListView(APIView):
         users = ClubUser.objects.all()  # Retrieve all users
         serializer = ClubUserSerializer(users, many=True)
         return Response(serializer.data)
+
+
+class CourtViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]  # Require authentication
+
+    queryset = Court.objects.all()
+    serializer_class = CourtSerializer
 
 
 class ProtectedView(APIView):

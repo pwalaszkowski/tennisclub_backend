@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
-from .models import ClubUser
+from .models import ClubUser, Court
 
 class ClubUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,3 +15,7 @@ class ClubUserSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
+class CourtSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Court
+        fields = '__all__'

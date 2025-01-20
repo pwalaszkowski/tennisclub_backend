@@ -30,3 +30,19 @@ class ClubUser(AbstractUser):
     )
 
     REQUIRED_FIELDS = ['email', 'name', 'last_name', 'phone', 'membership_type', 'address']
+
+
+class Court(models.Model):
+    SURFACE_CHOICES = (
+        ('hard', 'Hard'),
+        ('clay', 'Clay'),
+        ('grass', 'Grass'),
+    )
+
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=255)
+    surface = models.CharField(max_length=50, choices=SURFACE_CHOICES)
+    lights = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
