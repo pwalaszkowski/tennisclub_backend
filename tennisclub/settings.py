@@ -147,3 +147,9 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = 'club.ClubUser'
 
+
+# Redirection after login
+LOGIN_REDIRECT_URL = '/home'
+
+
+APPEND_SLASH=True

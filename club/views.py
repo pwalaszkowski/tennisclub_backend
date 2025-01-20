@@ -2,8 +2,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.contrib.auth import authenticate
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.contrib.auth import authenticate, login
 from rest_framework import status
+from django.shortcuts import redirect
 
 from .serializers import ClubUserSerializer
 
@@ -20,19 +22,30 @@ class RegisterUserView(APIView):
 
 
 class LoginView(APIView):
+    permission_classes = [AllowAny]  # Allow anyone to access this view
+
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
-        user = authenticate(username=username, password=password)
+        user = authenticate(request, username=username, password=password)
 
-        if user is not None:
+        if user:
+            # Generate tokens for the authenticated user
             refresh = RefreshToken.for_user(user)
             return Response({
                 'refresh': str(refresh),
-                'access': str(refresh.access_token),
+                'access': str(refresh.access_token)
             }, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class HomeView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]  # Require authentication for this view
+
+    def get(self, request):
+        return Response({'message': f'Welcome, {request.user.username}!'})
 
 
 class ProtectedView(APIView):
