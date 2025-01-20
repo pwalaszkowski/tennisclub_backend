@@ -100,16 +100,16 @@ class CourtViewSet(viewsets.ModelViewSet):
     queryset = Court.objects.all()
     serializer_class = CourtSerializer
 
-class ReservationViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]  # Require authentication
 
+class ReservationViewSet(viewsets.ModelViewSet):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
+    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        # Limit reservations to the current user
-        user = self.request.user
-        return Reservation.objects.filter(user=user)
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
 
 class ProtectedView(APIView):

@@ -11,7 +11,7 @@ class ClubUserSerializer(serializers.ModelSerializer):
         model = ClubUser
         fields = [
             'id', 'username', 'name', 'last_name', 'email',
-            'phone', 'membership_type', 'address', 'date_joined',
+            'phone', 'membership_type', 'address', 'password',
         ]
 
     def create(self, validated_data):
@@ -29,6 +29,7 @@ class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
         fields = '__all__'
+        read_only_fields = ['user']  # Ensure the 'user' field is not required from the frontend
 
     def validate(self, data):
         court = data['court']
@@ -47,3 +48,9 @@ class ReservationSerializer(serializers.ModelSerializer):
             raise ValidationError("The court is already reserved for the selected time slot.")
 
         return data
+
+    def create(self, validated_data):
+        # Add the authenticated user to the reservation
+        user = self.context['request'].user
+        validated_data['user'] = user
+        return super().create(validated_data)
