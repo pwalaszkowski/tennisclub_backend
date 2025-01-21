@@ -1,0 +1,246 @@
+openapi: 3.0.0
+info:
+  title: Tennis Club API
+  version: 1.0.0
+  description: API do zarządzania użytkownikami, kortami tenisowymi i rezerwacjami w aplikacji.
+paths:
+  /api/home:
+    get:
+      summary: "Strona domowa API"
+      responses:
+        '200':
+          description: "Sukces"
+          content:
+            application/json:
+              example:
+                message: "Welcome to the Tennis Club API"
+
+  /api/register:
+    post:
+      summary: "Rejestracja nowego użytkownika"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required: [username, email, password]
+            example:
+              username: "new_user"
+              email: "user@example.com"
+              password: "securepassword123"
+      responses:
+        '201':
+          description: "Użytkownik zarejestrowany pomyślnie"
+          content:
+            application/json:
+              example:
+                message: "User registered successfully"
+                user_id: 123
+        '400':
+          description: "Błąd walidacji"
+          content:
+            application/json:
+              example:
+                error: "User with this email already exists"
+
+  /api/login:
+    post:
+      summary: "Logowanie użytkownika"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required: [username, password]
+            example:
+              username: "existing_user"
+              password: "securepassword123"
+      responses:
+        '200':
+          description: "Zalogowano pomyślnie"
+          content:
+            application/json:
+              example:
+                access_token: "eyJhbGciOiJIUzI1..."
+                refresh_token: "eyJhbGciOiJIUzI1..."
+        '401':
+          description: "Nieprawidłowe dane logowania"
+          content:
+            application/json:
+              example:
+                error: "Invalid username or password"
+
+  /api/logout:
+    post:
+      summary: "Wylogowanie użytkownika"
+      responses:
+        '200':
+          description: "Wylogowano pomyślnie"
+          content:
+            application/json:
+              example:
+                message: "Logged out successfully"
+
+  /api/token/refresh:
+    post:
+      summary: "Odświeżenie tokenu JWT"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+              required: [refresh_token]
+            example:
+              refresh_token: "eyJhbGciOiJIUzI1..."
+      responses:
+        '200':
+          description: "Token odświeżony"
+          content:
+            application/json:
+              example:
+                access_token: "new_access_token"
+        '400':
+          description: "Nieprawidłowy token odświeżania"
+          content:
+            application/json:
+              example:
+                error: "Invalid refresh token"
+
+  /api/users:
+    get:
+      summary: "Lista użytkowników"
+      responses:
+        '200':
+          description: "Lista użytkowników klubu"
+          content:
+            application/json:
+              example:
+                - id: 1
+                  username: "admin"
+                  email: "admin@example.com"
+                  is_active: true
+                - id: 2
+                  username: "user1"
+                  email: "user1@example.com"
+                  is_active: true
+
+  /api/courts:
+    get:
+      summary: "Lista kortów tenisowych"
+      responses:
+        '200':
+          description: "Lista kortów"
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: "Court A"
+                  surface: "Clay"
+                  availability: true
+                - id: 2
+                  name: "Court B"
+                  surface: "Grass"
+                  availability: false
+    post:
+      summary: "Dodanie nowego kortu"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                surface:
+                  type: string
+                availability:
+                  type: boolean
+              required: [name, surface, availability]
+            example:
+              name: "Court C"
+              surface: "Hard"
+              availability: true
+      responses:
+        '201':
+          description: "Kort dodany pomyślnie"
+          content:
+            application/json:
+              example:
+                id: 3
+                name: "Court C"
+                surface: "Hard"
+                availability: true
+
+  /api/reservations:
+    get:
+      summary: "Lista rezerwacji"
+      responses:
+        '200':
+          description: "Lista rezerwacji"
+          content:
+            application/json:
+              example:
+                - id: 1
+                  court: "Court A"
+                  user: "user1"
+                  date: "2025-01-22"
+                  time_slot: "10:00-11:00"
+                - id: 2
+                  court: "Court B"
+                  user: "user2"
+                  date: "2025-01-23"
+                  time_slot: "12:00-13:00"
+    post:
+      summary: "Dodanie nowej rezerwacji"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                court_id:
+                  type: integer
+                user_id:
+                  type: integer
+                date:
+                  type: string
+                  format: date
+                time_slot:
+                  type: string
+              required: [court_id, user_id, date, time_slot]
+            example:
+              court_id: 1
+              user_id: 2
+              date: "2025-01-22"
+              time_slot: "15:00-16:00"
+      responses:
+        '201':
+          description: "Rezerwacja dodana pomyślnie"
+          content:
+            application/json:
+              example:
+                id: 3
+                court: "Court A"
+                user: "user2"
+                date: "2025-01-22"
+                time_slot: "15:00-16:00"
